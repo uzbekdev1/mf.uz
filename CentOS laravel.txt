@@ -1,0 +1,32 @@
+CentOS - Laravel Administration
+
+1) Root access olish
+sudo su
+
+2) Nginx ornatish
+sudo yum install epel-release
+sudo yum install nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl status nginx
+
+3) Php 7 kochirish
+sudo yum install epel-release yum-utils -y
+sudo yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+sudo yum-config-manager --enable remi-php74
+sudo yum install php php-common php-opcache php-mcrypt php-cli php-gd php-curl php-mysql -y
+php -v
+
+4) PHP paketlari
+sudo curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
+
+5) Laravel biblatekas
+composer global require laravel/installer
+
+6) Web ilovani ishlatish
+php artisan serve --host=0.0.0.0 --port=8000
+
+7) Nginx qayta ishga tushirish
+systemctl stop nginx 
+systemctl start nginx

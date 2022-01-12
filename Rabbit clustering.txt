@@ -1,0 +1,52 @@
+# Dokcer info
+docker info
+
+# create custom bridge network
+docker network create mynet
+docker network inspect mynet
+
+# rabbit1 is hostname , erlang cookie is defined to facilitate cluster
+
+#Node 1
+docker run -d --hostname rabbit1 --name myrabbit1 -p 15672:15672 -p 5672:5672 --network mynet -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:management
+
+#Node 2
+docker run -d --hostname rabbit2 --name myrabbit2 -p 5673:5672 --link myrabbit1:rabbit1 --network mynet -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:management
+
+#Node 3
+docker run -d --hostname rabbit3 --name myrabbit3 -p 5674:5672 --link myrabbit1:rabbit1 --link myrabbit2:rabbit2 --network mynet -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:management
+
+#connect to running instance , stop the instance
+#join cluster,start the instance
+
+#Node 1
+docker exec -it myrabbit1 bash
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl start_app
+
+#Node 2
+docker exec -it myrabbit2 bash
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl join_cluster --ram rabbit@rabbit1
+rabbitmqctl start_app
+
+#Node 3
+docker exec -it myrabbit3 bash
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl join_cluster --ram rabbit@rabbit1
+rabbitmqctl start_app
+
+# check state
+rabbitmqctl cluster_status
+
+# users
+docker exec rabbit rabbitmqctl delete_user guest
+docker exec rabbit rabbitmqctl add_user {usr} {psw}
+docker exec rabbit rabbitmqctl set_user_tags {usr} administrator
+docker exec rabbit rabbitmqctl set_permissions -p / {usr} ".*" ".*" ".*"
+
+# polices
+HA .*	all	 ha-mode:	all;ha-sync-mode:	automatic;queue-mode:	lazy 0
