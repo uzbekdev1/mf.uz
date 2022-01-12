@@ -1,2 +1,1 @@
-# mf.uz
-Ministry of Finance of the Republic of Uzbekistan
+# Ministry of Finance of the Republic of Uzbekistan
